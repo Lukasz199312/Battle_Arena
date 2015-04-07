@@ -1,10 +1,14 @@
 package com.mygdx.game;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.client.Client;
@@ -16,15 +20,16 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture img;
 	Stage stage;
 	Player gameObject;
+	BlockingQueue<Vector2> Player_Position_queue = new ArrayBlockingQueue<Vector2>(1);
 	
 	@Override
 	public void create () {
-		Client client = new Client();
+		Client client = new Client(Thread.currentThread(), Player_Position_queue);
 		new Thread(client).start();
 		
 		batch = new SpriteBatch();
 		stage = new Stage();
-		gameObject = new Player();
+		gameObject = new Player(Player_Position_queue);
 	
 		Gdx.input.setInputProcessor(stage);
 		

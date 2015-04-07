@@ -13,10 +13,12 @@ public class Server extends Thread{
 	private int Port;
 	private String Server_Address;
 	private ArrayList<Player_Socket> PlayerList = new ArrayList<Player_Socket>();
+	private Thread MainThread;
 	
-	public Server(String Server_Address, int Port) {
+	public Server(String Server_Address, int Port, Thread thread) {
 		this.Port = Port;
 		this.Server_Address = Server_Address;
+		this.MainThread = thread;
 	}
 	
 	@Override
@@ -31,7 +33,7 @@ public class Server extends Thread{
 		System.out.println("Server Running on: " + serverSocket.getInetAddress().getHostAddress());
 		while(true){
 			try {
-				Player_Socket player =  CreateConnection.New(serverSocket.accept());
+				Player_Socket player =  CreateConnection.New(serverSocket.accept(), MainThread);
 				PlayerList.add(player);
 				
 				new Thread(player).start();

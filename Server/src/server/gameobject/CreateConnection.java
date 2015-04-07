@@ -6,8 +6,8 @@ public class CreateConnection {
 
 	private static int  Head_ID = 0;
 	
-	public static Player_Socket New(Socket socket){
-		Player_Socket Player = new Player_Socket(socket, Head_ID);
+	public static Player_Socket New(Socket socket, Thread thread){
+		Player_Socket Player = new Player_Socket(socket, Head_ID, thread);
 		Head_ID++;
 		return Player;
 	}

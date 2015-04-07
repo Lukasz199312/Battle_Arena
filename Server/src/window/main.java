@@ -37,7 +37,7 @@ public class main {
 			}
 		});
 		
-		Server server = new Server("localhost", 82);
+		Server server = new Server("localhost", 82, Thread.currentThread());
 		
 		new Thread(server).start();
 
