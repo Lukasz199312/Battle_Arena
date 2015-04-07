@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.mygdx.client.Client;
 import com.mygdx.objects.GameObject;
 import com.mygdx.objects.player.Player;
 
@@ -18,6 +19,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	@Override
 	public void create () {
+		Client client = new Client();
+		new Thread(client).start();
+		
 		batch = new SpriteBatch();
 		stage = new Stage();
 		gameObject = new Player();

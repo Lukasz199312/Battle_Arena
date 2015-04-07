@@ -1,16 +1,23 @@
 package window;
 
 import java.awt.*;
+
 import javax.swing.*;
 
+import server.Server;
+
 class MainFrame extends JFrame{
-	private static final int DEFAULT_WIDTH = 350;
-	private static final int DEFAULT_HEIGHT = 400;
 	private static final String Title = "Battle Arena - Server v 1.0";
 	
 	public MainFrame() {
-		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		
+		setSize(screenSize.width / 3, screenSize.height / 2 );
 		setTitle(Title);
+		setLocationByPlatform(true);
+		setResizable(false);
+		
 	}
 	
 }
@@ -29,6 +36,10 @@ public class main {
 				
 			}
 		});
+		
+		Server server = new Server("localhost", 82);
+		
+		new Thread(server).start();
 
 	}
 
