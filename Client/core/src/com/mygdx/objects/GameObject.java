@@ -16,7 +16,6 @@ public class GameObject extends Actor{
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		batch.draw(texture, transform.getPosition().x, transform.getPosition().y);
-		Gdx.app.log("Position", transform.getPosition().toString());
 	}
 	
 }

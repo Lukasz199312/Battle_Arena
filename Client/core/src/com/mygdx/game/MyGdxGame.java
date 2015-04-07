@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.objects.GameObject;
-import com.mygdx.objects.Player;
+import com.mygdx.objects.player.Player;
 
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
