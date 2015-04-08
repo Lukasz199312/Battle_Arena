@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
+import packets.Packet;
 import server.gameobject.CreateConnection;
 import server.gameobject.Player_Socket;
 
@@ -34,7 +35,9 @@ public class Server extends Thread{
 		while(true){
 			try {
 				Player_Socket player =  CreateConnection.New(serverSocket.accept(), MainThread);
+				player.setPlayerList(PlayerList);
 				PlayerList.add(player);
+				
 				
 				new Thread(player).start();
 			} catch (IOException e) {

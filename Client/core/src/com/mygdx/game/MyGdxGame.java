@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.client.Client;
 import com.mygdx.objects.GameObject;
+import com.mygdx.objects.Player_net;
 import com.mygdx.objects.player.Player;
 
 public class MyGdxGame extends ApplicationAdapter {
@@ -20,6 +21,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture img;
 	Stage stage;
 	Player gameObject;
+
 	BlockingQueue<Vector2> Player_Position_queue = new ArrayBlockingQueue<Vector2>(1);
 	
 	@Override
@@ -35,7 +37,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		gameObject.texture = new Texture(Gdx.files.internal("Player_Texture.png"));
 		
+		
+		Player_net player_net = new Player_net();
+		player_net.transform = new Transform(new Vector2(50, 50), 0);
+		player_net.texture = new Texture(Gdx.files.internal("Player_Texture.png"));
+		
 		stage.addActor(gameObject);
+		stage.addActor(player_net);
+		
 	}
 
 	@Override
