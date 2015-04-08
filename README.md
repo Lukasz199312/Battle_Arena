@@ -1,1 +1,1 @@
-# Battle_Arena Authors
+# Battle Arena Authors
