@@ -62,7 +62,7 @@ public class Player_Socket extends Thread{
 					
 					
 					
-					System.out.println("Pozycja Obiektu ID: " + packet.ID + "  " + packet.x + " : " + packet.y);
+					//System.out.println("Pozycja Obiektu ID: " + packet.ID + "  " + packet.x + " : " + packet.y);
 				}
 				
 				

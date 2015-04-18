@@ -12,5 +12,10 @@ public class CreateConnection {
 		return Player;
 	}
 	
+	public static int addUniqueID(){
+		Head_ID++;
+		return Head_ID -= 1;
+	}
+	
 	public int getHead(){ return Head_ID; }
 }

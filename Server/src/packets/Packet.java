@@ -7,5 +7,7 @@ public class Packet implements Serializable{
 	public float x;
 	public float y;
 	
+	public Action_Type Type;
+	
 	
 }
