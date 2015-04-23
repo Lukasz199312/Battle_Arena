@@ -13,6 +13,7 @@ import java.util.Queue;
 
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
+import packets.Action_Type;
 import packets.Packet;
 
 public class Player_Socket extends Thread{
@@ -46,41 +47,52 @@ public class Player_Socket extends Thread{
 	public void run() {
 		
 		RegisterMe();
-		
 		boolean Exit = false;
 		
 		while(!Exit){
+			//System.out.println("SERVER LIFE");
+			//System.out.println("Ilosc graczy: " + Player_List.size());
+			
+//			try {	
+//				Object obj = getData.readObject();
+//				
+//				if(obj instanceof Packet){
+//					Packet packet = new Packet();
+//					packet = ((Packet)obj);
+//					
+//				}
+//				
+//			} catch (ClassNotFoundException | IOException e) {
+//				if(MainThread.isAlive() == false ) Exit = true;
+//			} 
 			
 			
 			try {
-				
-				Object obj = getData.readObject();
-				
-				if(obj instanceof Packet){
-					Packet packet;
-					packet = ((Packet)obj);
-					
-					
-					
-					//System.out.println("Pozycja Obiektu ID: " + packet.ID + "  " + packet.x + " : " + packet.y);
-				}
-				
-				
-			} catch (ClassNotFoundException | IOException e) {
-				if(MainThread.isAlive() == false ) Exit = true;
-			} 
-			
-		
-			try {
-				
+				//System.out.println("SWysylanie");
+				Packet packet = new Packet();
+				packet.Type = Action_Type.START_UPDATE;
+				setData.writeObject(packet);
+//		    	try {
+//					Thread.currentThread().sleep(100);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			    Iterator<Player_Socket> iter = Player_List.iterator();
-			    
 			    while(iter.hasNext()){
-					Packet packet = new Packet();
+
+					packet = new Packet();
 					packet.ID = iter.next().id;
-					setData.writeObject(packet);	//Wywlasczenie ?!
+					packet.Type = Action_Type.PLAYER_INFORMATION_UPDATE;
+				//	System.out.println("Wysylanie player list");
+					setData.writeObject(packet);
+					//System.out.println("Wysylanie player list DONE");
 			    }
-			    			
+			    
+				packet = new Packet();
+				packet.Type = Action_Type.END_UPDATE;
+				setData.writeObject(packet);
+
 				
 			} catch (IOException e) {
 				Exit = true;
@@ -99,7 +111,10 @@ public class Player_Socket extends Thread{
 		while(!Exit){
 			try {
 				System.out.println("ID: " + (id + 1));
-				setData.writeObject(this.id);
+				Packet packet = new Packet();
+				packet.ID = this.id;
+				packet.Type = Action_Type.CONNECT_ME;
+				setData.writeObject(packet);
 				Exit = true;
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block

@@ -13,7 +13,7 @@ public class Player_Controller {
 	public Player_Controller(float Speed) { this.Speed = Speed; }
 	
 	public void Move(float delta){
-	
+		if(gameObject == null) return;
 		isMoved = false;
 		
 		Move_UP(gameObject.getY(), delta);

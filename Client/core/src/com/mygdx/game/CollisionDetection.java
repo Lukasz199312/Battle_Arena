@@ -37,6 +37,7 @@ public class CollisionDetection {
 	
 	public static void Check(Player player, ArrayList<GameObject> GameObjectList){
 	    for(int i = 0; i < GameObjectList.size(); i++ ){
+	    	if(player == null) return;
 	    		if(player.getBounds().overlaps(GameObjectList.get(i).getBounds()) == true) {
 	    			float tmpX = player.getX();
 	    			float tmpY = player.getY();

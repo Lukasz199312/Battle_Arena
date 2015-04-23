@@ -10,6 +10,7 @@ public class GameObject extends Actor{
 	protected Rectangle bounds;
 	protected float old_x;
 	protected float old_y;
+	protected int ID;
 	
 	public GameObject(Texture texture, float position_x, float position_y) {
 		this.texture = texture;
@@ -68,6 +69,14 @@ public class GameObject extends Actor{
 	
 	public float getOldY(){
 		return old_y;
+	}
+	
+	public int getID(){
+		return ID;
+	}
+	
+	public void setID(int ID){
+		this.ID = ID;
 	}
 	
 	@Override
