@@ -5,5 +5,7 @@ public enum Action_Type {
 	END,
 	LISTENING_START,
 	NEW_PLAYER,
+	READ_MODE,
+	SEND_MODE,
 	OPERATION_COMPLETE;
 }

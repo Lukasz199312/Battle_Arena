@@ -38,7 +38,7 @@ public class Player_Socket extends Thread{
 	public Player_Socket(Socket socket, int id, Thread MainThread) { 
 		this.socket = socket;
 		try {
-			socket.setSoTimeout(100);
+			socket.setSoTimeout(200);
 		} catch (SocketException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -63,54 +63,25 @@ public class Player_Socket extends Thread{
 		
 		
 		while(!Exit){
-			//System.out.println("SERVER LIFE");
-			//System.out.println("Ilosc graczy: " + Player_List.size());
 			
-//			try {	
-//				Object obj = getData.readObject();
-//				
-//				if(obj instanceof Packet){
-//					Packet packet = new Packet();
-//					packet = ((Packet)obj);
-//					
-//				}
-//				
-//			} catch (ClassNotFoundException | IOException e) {
-//				if(MainThread.isAlive() == false ) Exit = true;
-//			} 
+			// Wysylanie
 			
+			while(true){
+				
+				Packet packet = new Packet();
+				packet.Type = Action_Type.START;
+				
+				break;
+				
+			}
 			
-//			try {
-//				//System.out.println("SWysylanie");
-//				Packet packet = new Packet();
-//				packet.Type = Action_Type.START_UPDATE;
-//				setData.writeObject(packet);
-//			    Iterator<Player_Socket> iter = Player_List.iterator();
-//			    while(iter.hasNext()){
-//
-//					packet = new Packet();
-//					packet.ID = iter.next().id;
-//					packet.Type = Action_Type.PLAYER_INFORMATION_UPDATE;
-//					setData.writeObject(packet);
-//					
-//			    }
-//			    
-//				packet = new Packet();
-//				packet.Type = Action_Type.END_UPDATE;
-//				setData.writeObject(packet);
-//
-				System.out.println("Wysylanie player list DONE" + new Date().getTime());
-		    	try {
-					Thread.currentThread().sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-//				
-//			} catch (IOException e) {
-//				Exit = true;
-//				e.printStackTrace();
-//			}
+			System.out.println("Wysylanie player list DONE" + new Date().getTime());
+	    	try {
+				Thread.currentThread().sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		}
 		
