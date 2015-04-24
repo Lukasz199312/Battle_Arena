@@ -11,6 +11,7 @@ import packets.Packet;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.mygdx.client.Client;
 import com.mygdx.client.NetworkController;
 import com.mygdx.objects.GameObject;
 import com.mygdx.objects.enemy.Enemy;
@@ -54,55 +55,18 @@ public class GameLogic {
 	}
 	
 	public void NetworkUpdate(){
-		
-		
-		//Gdx.app.log("Packiet", Integer.toString( networkController.getPacketQueue().size() ));
 		Packet packet = networkController.getPacket();
 		if(packet == null) return;
-		Gdx.app.log("Pakiet przekazany do", " GameLogic Typ: " + packet.Type);
-		if(packet.Type == Action_Type.CONNECT_ME) {
-			this.addObject(GameObjectType.Player, 20, 20);
-			Player_Me.setID(packet.ID);
-		}
 		
-		else if(packet.Type == Action_Type.START_UPDATE){
-			while(true){
-				packet = networkController.getPacket();
-				if(packet != null){
-					
-					if(packet.Type == Action_Type.PLAYER_INFORMATION_UPDATE){
-						
-						Iterator<Player> iter = ConnectedPlayerList.iterator();
-						boolean UpdatedData = false;
-						
-						while(iter.hasNext()){
-							Player tmpPlayer = iter.next();
-							
-							if(tmpPlayer.getID() == packet.ID) {
-//								Gdx.app.log("Aktualizacja ID" , Integer.toString(packet.ID));
-								UpdatedData = true;
-								break;
-							}
-						}
-						
-						if(UpdatedData == false) {
-							if(packet.ID != Player_Me.getID()) this.addObject(GameObjectType.ConnectedPlayer, 50, 50);
-						}
-					}
-					
-					if(packet.Type == Action_Type.END_UPDATE) {
-//						Gdx.app.log("Action" , "END");
-						break;
-					}
-				}
-				
-			}
-			
+		if(packet.Type == Action_Type.NEW_PLAYER){
+			addObject(GameObjectType.Player, packet.x, packet.y);
 		}
+
 	}
-//	public BlockingQueue<Packet>getPacketQueue(){
-//		return PacketQueue;
-//	}
+	
+	public Client getClient(){
+		return networkController.getClient();
+	}
 	
 	
 }

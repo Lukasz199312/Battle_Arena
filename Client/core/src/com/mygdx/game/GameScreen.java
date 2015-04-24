@@ -55,6 +55,12 @@ public class GameScreen implements Screen{
 
 	    
 	    while(true){	//Wait for Connecting
+	    	try {
+				Thread.currentThread().sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	    	gameLogic.NetworkUpdate();
 	    	if(gameLogic.getPlayer() != null){
 	    		controller.gameObject = gameLogic.getPlayer();
@@ -79,14 +85,14 @@ public class GameScreen implements Screen{
 //	    		PacketQueue.remove();
 //	    	}
 //	    }
-		
+		gameLogic.NetworkUpdate();
 		Gdx.gl.glClearColor(255, 255, 255, 0);
 	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	    orto.update();
 	    stage.act();
 	    controller.Move(delta);
 	    gameLogic.CheckCollision();
-	    gameLogic.NetworkUpdate();
+	  
 	    stage.draw();
 	    stage.getViewport().getCamera().update();
 	    

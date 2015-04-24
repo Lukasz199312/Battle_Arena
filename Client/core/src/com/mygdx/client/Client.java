@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import packets.Action_Type;
 import packets.Packet;
@@ -22,36 +23,14 @@ public class Client extends Thread{
 	private ObjectInputStream getData;
 	private BlockingQueue<Packet> PacketQueue = new ArrayBlockingQueue<Packet>(1);
 	
+	
 	@Override
 	public void run() {
 		InitConnection();
+		Register_me();
+		
+		
 
-		while(true){
-			//Gdx.app.log("STILL: ", "LIFE");
-			try {
-				Object obj = getData.readObject();
-				if(obj instanceof Packet){
-					Packet packet = (Packet)obj;
-						//Gdx.app.log("Client: ", "Odebralem pakiet");
-						//while(true) {
-							//Gdx.app.log("Client: ", "IN QUEUE");
-							PacketQueue.offer(packet);
-							//Gdx.app.log("Client: ", "Packet Dodany do listy");
-						//}
-					
-				}
-			} catch (ClassNotFoundException e) {
-				
-				e.printStackTrace();
-				break;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				break;
-			}
-		}
-		//
-		//Gdx.app.log("client", "threadend");
 	}
 	
 	public void InitConnection(){
@@ -78,24 +57,21 @@ public class Client extends Thread{
 	
 	public void Register_me(){
 		try {
+			Gdx.app.log("REGISTER", "NEW PLAYER");
 			Object obj = getData.readObject();
-			int ID = (Integer) obj;
-			System.out.println(Integer.toString(ID));
-			
-			Packet packet = new Packet();
-			packet.ID = ID;
-			packet.Type = Action_Type.CONNECT_ME;
+			Packet packet = (Packet)obj;
 			
 			try {
 				PacketQueue.put(packet);
+				packet = new Packet();
+				packet.Type = Action_Type.OPERATION_COMPLETE;
+				
+				sendData.writeObject(packet);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-//			while(true){
-//				if(PacketQueue.offer(packet)) break;
-//			}
 			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block

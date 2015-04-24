@@ -8,6 +8,8 @@ import server.Server;
 
 class MainFrame extends JFrame{
 	private static final String Title = "Battle Arena - Server v 1.0";
+	private boolean StartServer = false;
+	private boolean StartGame = false;
 	
 	public MainFrame() {
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
