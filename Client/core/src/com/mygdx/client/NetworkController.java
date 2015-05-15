@@ -7,11 +7,12 @@ import packets.Packet;
 
 public class NetworkController {
 	private Client client;
-	private BlockingQueue<Packet> PacketQueue = new ArrayBlockingQueue<Packet>(1);
+	private BlockingQueue<Packet> PacketQueue = new ArrayBlockingQueue<Packet>(3000);
+	private BlockingQueue<Packet> PacketQueueUpdate = new ArrayBlockingQueue<Packet>(3000);
 	
 	public NetworkController() {
 		client = new Client();
-		client.setPacketQueue(PacketQueue);
+		client.setPacketQueue(PacketQueue, PacketQueueUpdate);
 		new Thread(client).start();
 		
 	}
@@ -28,4 +29,7 @@ public class NetworkController {
 		return PacketQueue;
 	}
 	
+	public BlockingQueue<Packet> getPacketQueueUpdate(){
+		return PacketQueueUpdate;
+	}
 }

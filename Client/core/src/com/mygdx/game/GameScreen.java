@@ -49,9 +49,9 @@ public class GameScreen implements Screen{
 	    gameLogic = new GameLogic(stage);
 	   
 		
-	    gameLogic.addObject(GameObjectType.StaticObject, 230, 366);
-	    gameLogic.addObject(GameObjectType.StaticObject, 262, 366);
-	    gameLogic.addObject(GameObjectType.StaticObject, 294, 366);
+	    gameLogic.addObject(GameObjectType.StaticObject, -1, 230, 366);
+	    gameLogic.addObject(GameObjectType.StaticObject, -1, 262, 366);
+	    gameLogic.addObject(GameObjectType.StaticObject, -1, 294, 366);
 
 	    
 	    while(true){	//Wait for Connecting
@@ -61,12 +61,14 @@ public class GameScreen implements Screen{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	    	gameLogic.NetworkUpdate();
+	    	gameLogic.RegisterPlayer();
 	    	if(gameLogic.getPlayer() != null){
 	    		controller.gameObject = gameLogic.getPlayer();
 	    		break;
 	    	}
 	    }
+	    
+	    System.out.println("ID: " + gameLogic.getPlayer().getID());
 	    
 	    Gdx.input.setInputProcessor(stage);
 
@@ -74,17 +76,6 @@ public class GameScreen implements Screen{
 	
 	@Override
 	public void render(float delta) {
-		//orto.update();
-		
-//	    if( PacketQueue.peek() != null){
-//	    	Packet packet = PacketQueue.peek();
-//	    	
-//	    	if(packet.Type == Action_Type.CONNECT_ME){
-//	    		gameLogic.addObject(GameObjectType.Player, 100, 100);
-//	    		controller.gameObject = gameLogic.getPlayer();
-//	    		PacketQueue.remove();
-//	    	}
-//	    }
 		gameLogic.NetworkUpdate();
 		Gdx.gl.glClearColor(255, 255, 255, 0);
 	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -95,8 +86,7 @@ public class GameScreen implements Screen{
 	  
 	    stage.draw();
 	    stage.getViewport().getCamera().update();
-	    
-	   
+	    gameLogic.PlayerUpdate();
 	    
 	   // orto.update();
 	  //  orto = new OrthographicCamera(1, h/2);

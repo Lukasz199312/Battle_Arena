@@ -34,9 +34,9 @@ public class GameLogic {
 		CollisionDetection.Check(Player_Me, StaticGameObjectList);
 	}
 	
-	public void addObject(GameObjectType Type, float position_x, float position_y){
+	public void addObject(GameObjectType Type, int ID, float position_x, float position_y){
 		if(Type == GameObjectType.Player){
-			this.Player_Me = new Player(new Texture(Gdx.files.internal("Player_Texture.png")), 0, 0, 64, 64);
+			this.Player_Me = new Player(new Texture(Gdx.files.internal("Player_Texture.png")), ID ,0, 0, 64, 64);
 			this.stage.addActor(Player_Me);
 		}
 		else if(Type == GameObjectType.StaticObject){
@@ -44,24 +44,66 @@ public class GameLogic {
 			this.stage.addActor(StaticGameObjectList.get(StaticGameObjectList.size()-1));
 		}
 		else if(Type == GameObjectType.ConnectedPlayer){
-			this.ConnectedPlayerList.add(new Player(new Texture(Gdx.files.internal("Player_Texture.png")), 0, 0, 64, 64));
+			this.ConnectedPlayerList.add( new Player(new Texture(Gdx.files.internal("Player_Texture.png")), ID ,0, 0, 64, 64) );
 			this.stage.addActor(ConnectedPlayerList.get(ConnectedPlayerList.size()-1));
 		}
 		
 	}
+	
+	
 	
 	public Player getPlayer() {
 		return this.Player_Me;
 	}
 	
 	public void NetworkUpdate(){
+		while(true){
+			Packet packet = networkController.getPacket();
+			if(packet == null) return;
+			
+			if(packet.Type == Action_Type.PLAYER_UPDATE){
+				Iterator<Player> iter = ConnectedPlayerList.iterator();
+				while(iter.hasNext()){
+					Player player = iter.next();
+					if(packet.ID == player.getID()){
+						player.setX(packet.x);
+						player.setY(packet.y);
+						packet = null;
+						break;
+					}
+				}
+				if(packet != null){
+					addObject(GameObjectType.ConnectedPlayer,packet.ID , packet.x, packet.y);
+				}
+				
+			}
+		}
+	}
+	
+	public void PlayerUpdate(){
+		Packet packet = new Packet();
+		packet.Type = Action_Type.PLAYER_UPDATE;
+		
+		packet.ID = Player_Me.getID();
+		packet.x = Player_Me.getX();
+		packet.y = Player_Me.getY();
+		
+		networkController.getPacketQueueUpdate().offer(packet);
+		
+		try {
+			Thread.currentThread().sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void RegisterPlayer(){
 		Packet packet = networkController.getPacket();
 		if(packet == null) return;
-		
 		if(packet.Type == Action_Type.NEW_PLAYER){
-			addObject(GameObjectType.Player, packet.x, packet.y);
+			addObject(GameObjectType.Player, packet.ID , packet.x, packet.y);
 		}
-
 	}
 	
 	public Client getClient(){

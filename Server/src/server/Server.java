@@ -3,6 +3,9 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import packets.Packet;
 import server.gameobject.CreateConnection;
@@ -29,14 +32,18 @@ public class Server extends Thread{
 		serverSocket = new ServerSocket(Port);
 		} catch (IOException e) {
 			System.out.println("Port: " + Port + " Jest Zajety");
+			e.printStackTrace();
 		}
 		
 		System.out.println("Server Running on: " + serverSocket.getInetAddress().getHostAddress());
 		while(true){
+			
 			try {
 				Player_Socket player =  CreateConnection.New(serverSocket.accept(), MainThread);
 				player.setPlayerList(PlayerList);
-				PlayerList.add(player);
+				
+				List list = Collections.synchronizedList(PlayerList);
+				list.add(player);
 				
 				
 				new Thread(player).start();
@@ -44,6 +51,8 @@ public class Server extends Thread{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+
 		}
 		
 	}
