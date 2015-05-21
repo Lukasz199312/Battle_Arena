@@ -10,6 +10,7 @@ import packets.Packet;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.client.Client;
 import com.mygdx.client.NetworkController;
@@ -24,6 +25,7 @@ public class GameLogic {
 	private ArrayList<Enemy> EnemyList = new ArrayList<Enemy>();
 	private ArrayList<GameObject> StaticGameObjectList = new ArrayList<GameObject>();
 	private NetworkController networkController = new NetworkController();
+	private long time = 0;
 	
 	public GameLogic(Stage stage) {
 		this.stage = stage;
@@ -44,8 +46,12 @@ public class GameLogic {
 			this.stage.addActor(StaticGameObjectList.get(StaticGameObjectList.size()-1));
 		}
 		else if(Type == GameObjectType.ConnectedPlayer){
-			this.ConnectedPlayerList.add( new Player(new Texture(Gdx.files.internal("Player_Texture.png")), ID ,0, 0, 64, 64) );
+			this.ConnectedPlayerList.add( new Player(new Texture(Gdx.files.internal("Player_Texture.png")), ID ,position_x, position_y, 64, 64) );
 			this.stage.addActor(ConnectedPlayerList.get(ConnectedPlayerList.size()-1));
+		}
+		else if(Type == GameObjectType.Enemy){
+			this.EnemyList.add( new Enemy(new Texture(Gdx.files.internal("zombie.png")), ID, position_x, position_y, 64, 64) );
+			this.stage.addActor(EnemyList.get(EnemyList.size() - 1));
 		}
 		
 	}
@@ -77,25 +83,62 @@ public class GameLogic {
 				}
 				
 			}
+			
+			else if(packet.Type == Action_Type.REMOVE_PLAYER){
+				Iterator<Player> iter = ConnectedPlayerList.iterator();
+				while(iter.hasNext()){
+					Player player = iter.next();
+					if(packet.ID == player.getID()){
+						
+						Iterator<Actor> iterActor = stage.getActors().iterator();
+						while(iterActor.hasNext()){
+							Actor actor = iterActor.next();
+
+							if(actor == player) {
+								iterActor.remove();
+								break;
+							}
+						}
+						
+						iter.remove();
+						break;
+					}
+				}
+			}
+			else if( packet.Type == Action_Type.ENEMY_UPDATE){
+				Iterator<Enemy> iter = EnemyList.iterator();
+				while(iter.hasNext()){
+					Enemy enemy = iter.next();
+					if(packet.ID == enemy.getID()){
+						enemy.setX(packet.x);
+						enemy.setY(packet.y);
+						packet = null;
+						break;
+					}
+				}
+				if(packet != null){
+					addObject(GameObjectType.Enemy, packet.ID , packet.x, packet.y);
+				}
+			}
 		}
 	}
 	
 	public void PlayerUpdate(){
-		Packet packet = new Packet();
-		packet.Type = Action_Type.PLAYER_UPDATE;
 		
-		packet.ID = Player_Me.getID();
-		packet.x = Player_Me.getX();
-		packet.y = Player_Me.getY();
+	//	if(System.currentTimeMillis() - time > 0){
+			Packet packet = new Packet();
+			packet.Type = Action_Type.PLAYER_UPDATE;
+			
+			packet.ID = Player_Me.getID();
+			packet.x = Player_Me.getX();
+			packet.y = Player_Me.getY();
+			
+			networkController.getPacketQueueUpdate().offer(packet);
+			
+			time = System.currentTimeMillis();
+	//	}
+
 		
-		networkController.getPacketQueueUpdate().offer(packet);
-		
-		try {
-			Thread.currentThread().sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	public void RegisterPlayer(){

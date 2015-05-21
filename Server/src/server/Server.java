@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import Enemy.EnemyController;
 import packets.Packet;
 import server.gameobject.CreateConnection;
 import server.gameobject.Player_Socket;
@@ -18,11 +19,17 @@ public class Server extends Thread{
 	private String Server_Address;
 	private ArrayList<Player_Socket> PlayerList = new ArrayList<Player_Socket>();
 	private Thread MainThread;
+	private EnemyController enemyController;
 	
 	public Server(String Server_Address, int Port, Thread thread) {
 		this.Port = Port;
 		this.Server_Address = Server_Address;
 		this.MainThread = thread;
+		this.enemyController = new EnemyController(MainThread);
+		this.enemyController.setPlayer_List(PlayerList);
+
+		
+		new Thread(enemyController).start();
 	}
 	
 	@Override

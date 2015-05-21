@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -68,8 +69,8 @@ public class Player_Socket extends Thread{
 	@Override
 	public void run() {
 		
-		AddNewPlayer();
-		getPlayers();
+//		AddNewPlayer();
+//		getPlayers();
 		
 		Packet packet = new Packet();
 		Packet ReceivePacket = new Packet();
@@ -77,78 +78,90 @@ public class Player_Socket extends Thread{
 		packet.Type = Action_Type.NEW_PLAYER;
 		packet.ID = this.id;
 		
-		SendAndConfirm(packet);
+		
+//		try {
+//			socket.setTcpNoDelay(true);
+//		} catch (SocketException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		
+//		while(true){
+//			ReceivePacket = SendAndConfirm(packet);
+//			if(ReceivePacket != null)break;
+//		}
+	
+		SendPacket(packet);
+//		System.out.println("quee: " + queue.size());
+//		for(int i = 10; i <= 15; i++){
+//			packet = new Packet();
+//			packet.Type = Action_Type.PLAYER_UPDATE;
+//			packet.x = 10 + (i*50);
+//			packet.y = 100;
+//			packet.ID = 100 + i;
+//			
+//			queue.add(packet);
+//		}
 		
 		
-//		packet.Type = Action_Type.CLIENT_READ_MODE;
-//		packet.ID = -9;
-//
-//		SendPacket(packet);
-//		
-		
-		boolean Exit = false;		
+		System.out.println("quee: " + queue.size());
+		setSoTime(0);
 		while(!Exit){
+			//System.out.println(Thread.currentThread().getName() + " Player List: " + Player_List.size());
 			
-			Sleep(20);
 			
 			if(queue.size() > 0){
-				System.out.println(Thread.currentThread().getName() + " Queue-size: " + queue.size());
 				packet.Type = Action_Type.CLIENT_READ_MODE;
-				packet.ID = -5;
-				
 				SendPacket(packet);
-	
-				Iterator<Packet> iter = queue.iterator();
-				while(iter.hasNext()){
-					packet = iter.next();
+				int i = 0;
+				while(true){
+					packet = new Packet();
+					packet = queue.poll();
+					if(packet == null) break;
 					SendPacket(packet);
-					iter.remove();
+//					System.out.println(i);
+//					i++;
 				}
-
+				
+				packet = new Packet();
+				packet.Type = Action_Type.END;
+				SendPacket(packet);
 				
 			}
-			packet.Type = Action_Type.END;
-			packet.ID = -2;
 			
-			SendPacket(packet);
+			
+			
+			
+			//read from client
+			
+			packet = new Packet();
 			packet.Type = Action_Type.CLIENT_SEND_MODE;
-			packet.ID = -1;
 			SendPacket(packet);
-			setSoTime(200);
-			Packet_Size = 0;
+			boolean isEmpty = true;
 			while(true){
-				//System.out.println(Thread.currentThread().getName() + " Ilosc graczy: " + Player_List.size());
-				
 				ReceivePacket = GetPacket();
+				
 				if(ReceivePacket == null) break;
 				if(ReceivePacket.Type == Action_Type.END) break;
 				
-				System.out.println(ReceivePacket.ID + " - " + ReceivePacket.Type);
+				isEmpty = false;
+				List<Player_Socket> list = Collections.synchronizedList(Player_List);
 				
-				System.out.println(ReceivePacket.ID + " - " + ReceivePacket.Type);
-				if(ReceivePacket != null && ReceivePacket.Type == Action_Type.PLAYER_UPDATE) {
-					Packet_Size++;
-					
-					List list = Collections.synchronizedList(Player_List);
-					synchronized (list) {
-						
-						Iterator<Player_Socket> iter = list.iterator();
-						while(iter.hasNext()){
-							Player_Socket playerlist = iter.next();
-							if(iter.hasNext()){
-								if(playerlist.id == ReceivePacket.ID) iter.next();
-							}
-							else break;
-							
-							playerlist.queue.offer(ReceivePacket);
+				synchronized (list) {
+					Iterator<Player_Socket> iter = list.iterator();
+					while(iter.hasNext()){
+						Player_Socket player_Socket = iter.next();
+						if(player_Socket.id != this.getID()){
+							player_Socket.queue.add(ReceivePacket);
 						}
+						
+						
 					}
-					
-					
 				}
+				
 			}
-		//	System.out.println(queue.size());
-			//Sleep(5);
+			
+			if(isEmpty == true) Sleep(1);
 		}
 		
 	}
@@ -174,6 +187,26 @@ public class Player_Socket extends Thread{
 			sendData.reset();
 			sendData.flush();
 			return true;
+		} catch (SocketException e) { 
+			List<Player_Socket> list = Collections.synchronizedList(Player_List);
+			
+			synchronized (list) {
+				Iterator<Player_Socket> iter = list.iterator();
+				while(iter.hasNext()){
+					Player_Socket player_Socket = iter.next();
+					Packet RemovePacket = new Packet();
+					RemovePacket.Type = Action_Type.REMOVE_PLAYER;
+					RemovePacket.ID = this.id;
+					player_Socket.queue.add(RemovePacket);
+					if(player_Socket.getID() == this.getID()){
+						iter.remove();
+					}
+				}
+			
+				Exit = true;
+				return false;
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -185,7 +218,7 @@ public class Player_Socket extends Thread{
 			Object object = getData.readObject();
 			if(object instanceof Packet){
 				
-				if( ((Packet)object).ID == Last_ID ) return null;
+				//if( ((Packet)object).ID == Last_ID ) return null;
 				
 				Last_ID = ((Packet)object).ID;
 				return (Packet)object;
@@ -222,25 +255,25 @@ public class Player_Socket extends Thread{
 		return false;
 	}
 	
-	private void AddNewPlayer(){
-		
-		List list = Collections.synchronizedList(Player_List);
-		
-		synchronized (list) {
-			Iterator<Player_Socket> iter = list.iterator();
-			while(iter.hasNext()){
-				Player_Socket player_Socket = iter.next();
-				if(player_Socket.id == this.id) continue;
-				
-				Packet packet = new Packet();
-				packet.Type = Action_Type.PLAYER_UPDATE;
-				packet.x = START_POSITION_X + 1 *id;
-				packet.y = START_POSITION_Y;
-				packet.ID = this.id;
-				player_Socket.queue.add(packet);
-			}
-		}
-	}
+//	private void AddNewPlayer(){
+//		
+//		List<Player_Socket> list = Collections.synchronizedList(Player_List);
+//		
+//		synchronized (list) {
+//			Iterator<Player_Socket> iter = list.iterator();
+//			while(iter.hasNext()){
+//				Player_Socket player_Socket = iter.next();
+//				if(player_Socket.id == this.id) continue;
+//				
+//				Packet packet = new Packet();
+//				packet.Type = Action_Type.PLAYER_UPDATE;
+//				packet.x = START_POSITION_X;
+//				packet.y = START_POSITION_Y;
+//				packet.ID = this.id;
+//				player_Socket.queue.add(packet);
+//			}
+//		}
+//	}
 	
 	private boolean setSoTime(int time){
 		try {
@@ -253,26 +286,27 @@ public class Player_Socket extends Thread{
 	}
 	
 	
-	private void getPlayers(){
-		
-		List list = Collections.synchronizedList(Player_List);
-		
-		synchronized (list) {
-			Iterator<Player_Socket> iter = list.iterator();
-			while(iter.hasNext()){
-				Player_Socket player_Socket = iter.next();
-				if(player_Socket.id == this.id) continue;
-				
-				Packet PlayerPacket = new Packet();
-				PlayerPacket.Type = Action_Type.PLAYER_UPDATE;
-				PlayerPacket.x = player_Socket.Position_x;
-				PlayerPacket.y = player_Socket.Position_y;
-				PlayerPacket.ID = player_Socket.id;
-				this.queue.add(PlayerPacket);
-			}
-		}
-	}
+//	private void getPlayers(){
+//		
+//		List<Player_Socket> list = Collections.synchronizedList(Player_List);
+//		
+//		synchronized (list) {
+//			Iterator<Player_Socket> iter = list.iterator();
+//			while(iter.hasNext()){
+//				Player_Socket player_Socket = iter.next();
+//				if(player_Socket.id == this.id) continue;
+//				
+//				Packet PlayerPacket = new Packet();
+//				PlayerPacket.Type = Action_Type.PLAYER_UPDATE;
+//				PlayerPacket.x = player_Socket.Position_x;
+//				PlayerPacket.y = player_Socket.Position_y;
+//				PlayerPacket.ID = player_Socket.id;
+//				this.queue.add(PlayerPacket);
+//			}
+//		}
+//	}
 	
 	public int getID() { return this.id; }
 	public void setPlayerList(ArrayList<Player_Socket> PlayerList) { this.Player_List = PlayerList; }
+	public ConcurrentLinkedQueue<Packet> getPacketQueue(){ return this.queue; }
 }

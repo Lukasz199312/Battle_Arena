@@ -20,6 +20,7 @@ import packets.Packet;
 import com.badlogic.gdx.Gdx;
 import com.mygdx.game.GameLogic;
 import com.mygdx.game.GameObjectType;
+import com.sun.glass.ui.Application;
 import com.sun.org.apache.regexp.internal.recompile;
 
 public class Client extends Thread{
@@ -29,90 +30,80 @@ public class Client extends Thread{
 	private BlockingQueue<Packet> PacketQueue = new ArrayBlockingQueue<Packet>(3000);
 	private BlockingQueue<Packet> PacketQueueUpdate = new ArrayBlockingQueue<Packet>(3000);
 	private long Last_ID = -100;
+	private boolean Exit = false;
 	
 	@Override
 	public void run() {
 		InitConnection();	
 		long time;
 		int packet_number;
-		
 		Packet packet = new Packet();
 		Packet ReceivePacket = new Packet();
+//		try {
+//			socket.setTcpNoDelay(true);
+//		} catch (SocketException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		packet.ID = -10;
+		setSoTime(0);
+//		while(true){
+//			ReceivePacket = SendAndConfirm(packet);
+//			if(ReceivePacket != null) break;
+//		}
 		
-		packet.ID = - 10;
-		ReceivePacket = SendAndConfirm(packet);
+		ReceivePacket = GetPacket();
 		RegisterNewPlayer(ReceivePacket);
+		System.out.println("ID: " + ReceivePacket.ID);
 		
-		//System.out.println("Client Packet: " + ReceivePacket.Type);
-		
-		boolean Exit = false;
-		System.out.println("START CLIENT");
+		int ReceivenNumberPacket = 0;
+
 		while(!Exit){
-			System.out.println("In while");
-			Sleep(20);
-			packet_number = 0;
 			time = System.currentTimeMillis();
-			setSoTime(0);
+			//Sleep(10);
 			ReceivePacket = new Packet();
 			ReceivePacket = GetPacket();
 			
-			if(ReceivePacket != null)
 			switch(ReceivePacket.Type){
 			case CLIENT_READ_MODE:
-				//System.out.println("Client Packet: " + ReceivePacket.Type);
-				setSoTime(999);
 				while(true){
+					ReceivePacket = new Packet();
 					ReceivePacket = GetPacket();
-					
-					if(ReceivePacket == null) break;
-					
-					if( ReceivePacket.Type == Action_Type.END) break;
-					
-					if(ReceivePacket.Type == Action_Type.PLAYER_UPDATE){
-						packet_number++;
-						System.out.println("Packet : " + ReceivePacket.Type );
-						PacketQueue.offer(ReceivePacket);
+					if(ReceivePacket != null){
+						//System.out.println("Packet " + ReceivePacket.Type);
+						if(ReceivePacket.Type == Action_Type.END) break;
+						try {
+							PacketQueue.put(ReceivePacket);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
 					}
 				}
-				//System.out.println("Packet Size: " + packet_number );
-				//System.out.println("Client END READ");
 				break;
 				
 			case CLIENT_SEND_MODE:
-			//	System.out.println("Client Packet: " + ReceivePacket.Type);
 				
-				Iterator<Packet> iter = PacketQueueUpdate.iterator();
-				while(iter.hasNext()){
-					packet = iter.next();
-					SendPacket(packet);
-					iter.remove();
-					
+				if(PacketQueueUpdate.size() > 0){
+					while(true){
+						packet = new Packet();
+						packet = PacketQueueUpdate.poll();
+						if(packet == null) break;
+						SendPacket(packet);
+					}
 				}
 				
-				//System.out.println("END");
-				
+				packet = new Packet();
 				packet.Type = Action_Type.END;
-				packet.ID = -1;
 				SendPacket(packet);
-				//System.out.println("Client END SEND");
 				break;
-				
-			case GAME_EXIT:
-				Exit = true;
-				break;
-				
-				default:
-					//System.out.println("SYSTEM ERROR SOCKET");
-					break;
 			}
-			
-			
-			//System.out.println("PING: " + (System.currentTimeMillis() - time) );
-		//	Sleep(5);
+			//System.out.println("MS: " + (System.currentTimeMillis() - time) );
 		}
-	
 		
-		System.out.println("END CLIENT");
+		
+		//System.out.println("END CLIENT");
 	}
 	
 	public void InitConnection(){
@@ -195,8 +186,8 @@ public class Client extends Thread{
 	
 	private boolean SendPacket(Packet packet){
 		try {
-			sendData.writeObject(packet);
 			sendData.reset();
+			sendData.writeObject(packet);
 			sendData.flush();
 			return true;
 		} catch (IOException e) {
@@ -211,7 +202,7 @@ public class Client extends Thread{
 			if(object instanceof Packet){
 				//System.out.println("otrzymany pakiet: "+ ((Packet)object).Type);
 				
-				if( ((Packet)object).ID == Last_ID ) return null;
+				//if( ((Packet)object).ID == Last_ID ) return null;
 				
 				Last_ID = ((Packet)object).ID;
 				return (Packet)object;
@@ -222,8 +213,10 @@ public class Client extends Thread{
 		} catch (SocketTimeoutException e) {
 			Packet packet = new Packet();
 			packet.Type = Action_Type.END;
-			System.out.println("END ");
+			System.out.println("Time Out ");
 			return packet;
+		} catch (SocketException e) {
+			System.exit(0);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
