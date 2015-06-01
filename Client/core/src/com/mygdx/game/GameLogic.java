@@ -6,6 +6,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import packets.Action_Type;
+import packets.MoveDirection;
 import packets.Packet;
 
 import com.badlogic.gdx.Gdx;
@@ -17,6 +18,7 @@ import com.mygdx.client.NetworkController;
 import com.mygdx.objects.GameObject;
 import com.mygdx.objects.enemy.Enemy;
 import com.mygdx.objects.player.Player;
+import com.sun.javafx.scene.traversal.Direction;
 
 public class GameLogic {
 	private Stage stage;
@@ -26,6 +28,7 @@ public class GameLogic {
 	private ArrayList<GameObject> StaticGameObjectList = new ArrayList<GameObject>();
 	private NetworkController networkController = new NetworkController();
 	private long time = 0;
+	private long FPS = 0;
 	
 	public GameLogic(Stage stage) {
 		this.stage = stage;
@@ -74,6 +77,7 @@ public class GameLogic {
 					if(packet.ID == player.getID()){
 						player.setX(packet.x);
 						player.setY(packet.y);
+						player.Direction = packet.Direction;
 						packet = null;
 						break;
 					}
@@ -112,28 +116,36 @@ public class GameLogic {
 					if(packet.ID == enemy.getID()){
 						enemy.setX(packet.x);
 						enemy.setY(packet.y);
+						enemy.Direction = packet.Direction;
 						packet = null;
 						break;
 					}
 				}
 				if(packet != null){
 					addObject(GameObjectType.Enemy, packet.ID , packet.x, packet.y);
+					EnemyList.get(EnemyList.size() - 1).Direction = packet.Direction;
 				}
 			}
 		}
 	}
 	
-	public void PlayerUpdate(){
+	public void PlayerUpdate(MoveDirection Direction){
 		
 	//	if(System.currentTimeMillis() - time > 0){
+			if(Direction == null) return;
+			
 			Packet packet = new Packet();
 			packet.Type = Action_Type.PLAYER_UPDATE;
 			
 			packet.ID = Player_Me.getID();
 			packet.x = Player_Me.getX();
 			packet.y = Player_Me.getY();
+			packet.Direction = Direction;
 			
 			networkController.getPacketQueueUpdate().offer(packet);
+			
+			if(getClient().getPacketQueue().size() >= 50) getClient().getPacketQueue().clear();
+			if(getClient().getPacketQueueUpdate().size() >= 50) getClient().getPacketQueueUpdate().clear();
 			
 			time = System.currentTimeMillis();
 	//	}

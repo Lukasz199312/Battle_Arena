@@ -5,13 +5,16 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import packets.Action_Type;
+import packets.MoveDirection;
 import packets.Packet;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -34,6 +37,15 @@ public class GameScreen implements Screen{
       private Player player;
       private Player Enemy, Enemy2 ,Enemy3, Enemy4;
       private GameLogic gameLogic;
+      private int FPS;
+      private int FPSCount;
+      private long FPS_TIME = 0;
+      private int Packet_number = 0;
+      
+      private SpriteBatch spriteBatch;
+      private BitmapFont font;
+      private MoveDirection Last_Direction;
+      
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
@@ -41,6 +53,10 @@ public class GameScreen implements Screen{
 	}
 
 	public GameScreen() {	
+		
+        batch = new SpriteBatch();    
+        font = new BitmapFont();
+        font.setColor(Color.RED);
 		
 		orto = new OrthographicCamera(1, h/2);
         orto.update();
@@ -81,15 +97,41 @@ public class GameScreen implements Screen{
 	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	    orto.update();
 	    stage.act();
-	    controller.Move(delta);
+	    MoveDirection Direction = controller.Move(delta);
+	    if(Direction == Last_Direction){
+	    	Direction = null;
+	    }
+	    else{
+	    	Last_Direction = Direction;
+	    	Packet_number++;
+	    }
+	    
 	    gameLogic.CheckCollision();
-	  
+	    
+	    batch.begin();
+	    font.draw(batch, "MS: "  + Long.toString(gameLogic.getClient().getMS()), 600, 25);
+	    font.draw(batch, "FPS: "  + Long.toString(FPS), 500, 25);
+	    font.draw(batch, "Queue-GET: "  + Long.toString(gameLogic.getClient().getPacketQueue().size()), 200, 25);
+	    font.draw(batch, "PACKET-SEND: "  + Long.toString(Packet_number), 10, 25);
+	    
+	    if(Direction != null)
+	    	 font.draw(batch, "DIRECTION: "  + Direction.toString(), 10, 55);
+	    batch.end();
+
+	    if(Direction != null)
+	    System.out.println(Direction.toString());
+        
 	    stage.draw();
 	    stage.getViewport().getCamera().update();
-	    gameLogic.PlayerUpdate();
+	    gameLogic.PlayerUpdate(Direction);
 	    
-	   // orto.update();
-	  //  orto = new OrthographicCamera(1, h/2);
+	    FPSCount = FPSCount + 1;
+	    if(System.currentTimeMillis() >  1000 + FPS_TIME){
+		    FPS = new Integer(FPSCount);
+		    FPSCount = 0;
+		    FPS_TIME = System.currentTimeMillis();
+		    Packet_number = 0;
+	    }
 	   
 	}
 	

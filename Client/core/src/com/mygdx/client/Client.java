@@ -27,24 +27,26 @@ public class Client extends Thread{
 	private Socket socket;
 	private ObjectOutputStream sendData;
 	private ObjectInputStream getData;
-	private BlockingQueue<Packet> PacketQueue = new ArrayBlockingQueue<Packet>(3000);
-	private BlockingQueue<Packet> PacketQueueUpdate = new ArrayBlockingQueue<Packet>(3000);
-	private long Last_ID = -100;
+	private BlockingQueue<Packet> PacketQueue = new ArrayBlockingQueue<Packet>(100);
+	private BlockingQueue<Packet> PacketQueueUpdate = new ArrayBlockingQueue<Packet>(100);
 	private boolean Exit = false;
+	private long MS;
+	private long MAX_MS = 0;
+	private long time;
+	private long RESET_TIME;
 	
 	@Override
 	public void run() {
 		InitConnection();	
-		long time;
 		int packet_number;
 		Packet packet = new Packet();
 		Packet ReceivePacket = new Packet();
-//		try {
-//			socket.setTcpNoDelay(true);
-//		} catch (SocketException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		try {
+			socket.setTcpNoDelay(true);
+		} catch (SocketException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		packet.ID = -10;
 		setSoTime(0);
 //		while(true){
@@ -57,10 +59,12 @@ public class Client extends Thread{
 		System.out.println("ID: " + ReceivePacket.ID);
 		
 		int ReceivenNumberPacket = 0;
-
+		RESET_TIME = System.currentTimeMillis();
 		while(!Exit){
 			time = System.currentTimeMillis();
-			//Sleep(10);
+			
+			
+			Sleep(10);
 			ReceivePacket = new Packet();
 			ReceivePacket = GetPacket();
 			
@@ -99,7 +103,14 @@ public class Client extends Thread{
 				SendPacket(packet);
 				break;
 			}
-			//System.out.println("MS: " + (System.currentTimeMillis() - time) );
+			
+			
+			MS = System.currentTimeMillis() - time;
+			if(MS > MAX_MS)  MAX_MS = MS;
+			if(RESET_TIME + 1000 <= System.currentTimeMillis()){
+				RESET_TIME = System.currentTimeMillis();
+				MAX_MS = MS;
+			}
 		}
 		
 		
@@ -108,7 +119,7 @@ public class Client extends Thread{
 	
 	public void InitConnection(){
 		try {
-			socket = new Socket("192.168.0.101", 6002);
+			socket = new Socket("192.168.0.102", 6002);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -201,10 +212,6 @@ public class Client extends Thread{
 			Object object = getData.readObject();
 			if(object instanceof Packet){
 				//System.out.println("otrzymany pakiet: "+ ((Packet)object).Type);
-				
-				//if( ((Packet)object).ID == Last_ID ) return null;
-				
-				Last_ID = ((Packet)object).ID;
 				return (Packet)object;
 			} 
 			else {
@@ -262,6 +269,10 @@ public class Client extends Thread{
 	
 	public BlockingQueue<Packet> getPacketQueueUpdate(){
 		return this.PacketQueueUpdate;
+	}
+	
+	public long getMS(){
+		return this.MAX_MS;
 	}
 
 }

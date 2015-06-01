@@ -8,6 +8,7 @@ public class Packet implements Serializable{
 	public float y;
 	
 	public Action_Type Type;
+	public MoveDirection Direction;
 	
 	
 }

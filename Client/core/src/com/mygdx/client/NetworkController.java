@@ -7,8 +7,8 @@ import packets.Packet;
 
 public class NetworkController {
 	private Client client;
-	private BlockingQueue<Packet> PacketQueue = new ArrayBlockingQueue<Packet>(3000);
-	private BlockingQueue<Packet> PacketQueueUpdate = new ArrayBlockingQueue<Packet>(3000);
+	private BlockingQueue<Packet> PacketQueue = new ArrayBlockingQueue<Packet>(100);
+	private BlockingQueue<Packet> PacketQueueUpdate = new ArrayBlockingQueue<Packet>(100);
 	
 	public NetworkController() {
 		client = new Client();

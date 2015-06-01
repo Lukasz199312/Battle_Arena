@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
+
 import packets.*;
 import server.gameobject.Player_Socket;
 
@@ -19,6 +21,7 @@ public class EnemyController extends Thread {
 		this.mainThread = mainThread;
 	}
 	
+
 	
 	@Override
 	public void run() {
@@ -51,24 +54,44 @@ public class EnemyController extends Thread {
 				
 			}
 			
-			
-			
-			synchronized (list) {
-				Iterator<Player_Socket> iter = list.iterator();
+			synchronized (list){
+				Iterator<AI> Iter_AI = AI_LIST.iterator();
+				Iterator<Player_Socket> Iter_Player = list.iterator();
 				
-				while(iter.hasNext()){
-					Player_Socket player_Socket = iter.next();
+				while(Iter_AI.hasNext()){
+					AI Enemy = Iter_AI.next();
 					
-					Iterator<AI> EnemyIter = AI_LIST.iterator();
-					while(EnemyIter.hasNext()){
-						AI Enemy = EnemyIter.next();
-						player_Socket.getPacketQueue().add(GeneratePacket(Enemy));
-						
+					if(Enemy.Direction != MoveDirection.RIGHT){
+						while(Iter_Player.hasNext()){
+							Player_Socket player = Iter_Player.next();
+							player.getPacketQueue().add(GeneratePacket(Enemy));
+						}
+						Enemy.Direction = MoveDirection.RIGHT;
 					}
-					
 				}
-				
 			}
+			
+			
+//			synchronized (list) {
+//				Iterator<Player_Socket> iter = list.iterator();
+//				
+//				while(iter.hasNext()){
+//					Player_Socket player_Socket = iter.next();
+//					
+//					Iterator<AI> EnemyIter = AI_LIST.iterator();
+//					while(EnemyIter.hasNext()){
+//						AI Enemy = EnemyIter.next();
+//						if(Enemy.Direction != MoveDirection.RIGHT){
+//							player_Socket.getPacketQueue().add(GeneratePacket(Enemy));
+//							Enemy.Direction = MoveDirection.RIGHT;
+//						}
+//							
+//						
+//					}
+//					
+//				}
+//				
+//			}
 			
 			if(mainThread.isAlive() == true) break;
 			
@@ -95,7 +118,7 @@ public class EnemyController extends Thread {
 		packet.ID = Enemy.getID();
 		packet.x = Enemy.getX();
 		packet.y = Enemy.getY();
-		
+		packet.Direction = MoveDirection.RIGHT;
 		return packet;
 		
 	}

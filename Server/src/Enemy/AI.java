@@ -2,6 +2,8 @@ package Enemy;
 
 import java.util.Random;
 
+import packets.MoveDirection;
+
 public class AI {
 	
 	private float Position_x = 0;
@@ -10,6 +12,7 @@ public class AI {
 	private Mode mode = Mode.Sleep;
 	private int ID;
 	private Random rand = new Random();
+	public MoveDirection Direction;
 	
 	public AI(int id, float x, float y) {
 		this.ID = id;
@@ -17,12 +20,20 @@ public class AI {
 		this.Position_y = y;
 	}
 	
-	public void Move(float deltaTime){
-		float move = Position_x + deltaTime * 180;
+	public MoveDirection Move(float deltaTime){
+		if(mode != Mode.Sleep){
+			float move = Position_x + deltaTime * 180;
+			
+			Position_x = move;
+			
+			return null;
+		}
 		
-		Position_x = move;
+		return null;
+
 	}
 
+	
 	public float getX(){
 		return Position_x;
 	}

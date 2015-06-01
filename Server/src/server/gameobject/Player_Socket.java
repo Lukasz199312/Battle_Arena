@@ -79,12 +79,12 @@ public class Player_Socket extends Thread{
 		packet.ID = this.id;
 		
 		
-//		try {
-//			socket.setTcpNoDelay(true);
-//		} catch (SocketException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		try {
+			socket.setTcpNoDelay(true);
+		} catch (SocketException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 //		while(true){
 //			ReceivePacket = SendAndConfirm(packet);
@@ -161,7 +161,7 @@ public class Player_Socket extends Thread{
 				
 			}
 			
-			if(isEmpty == true) Sleep(1);
+			if(isEmpty == true) Sleep(5);
 		}
 		
 	}

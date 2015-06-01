@@ -1,5 +1,7 @@
 package com.mygdx.objects;
 
+import packets.MoveDirection;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
@@ -11,8 +13,10 @@ public class GameObject extends Actor{
 	protected float old_x;
 	protected float old_y;
 	protected int ID;
+	public MoveDirection Direction;
 	
 	public GameObject(Texture texture, float position_x, float position_y) {
+		this.Direction = MoveDirection.STOP;
 		this.texture = texture;
 		this.setX(position_x);
 		this.setY(position_y);
@@ -77,6 +81,42 @@ public class GameObject extends Actor{
 	
 	public void setID(int ID){
 		this.ID = ID;
+	}
+	
+	@Override
+	public void act(float delta) {
+		super.act(delta);
+		if(Direction != null){
+			switch (Direction){
+			case UP:
+				moveBy(0,180 * delta );
+				break;
+			case DOWN:
+				moveBy(0, -180 * delta );
+				break;
+			case LEFT:
+				moveBy(-180 * delta, 0);
+				break;
+			case RIGHT:
+				moveBy(180 * delta, 0);
+				break;
+			case LEFT_DOWN:
+				moveBy(-180 * delta, -180 * delta);
+				break;
+			case LEFT_UP:
+				moveBy(-180 * delta, 180 * delta);
+				break;
+			case RIGHT_DOWN:
+				moveBy(180 * delta, -180 * delta);
+				break;
+			case RIGHT_UP:
+				moveBy(180 * delta, 180 * delta);
+				break;
+			case STOP:
+				this.Direction = null;
+				break;
+			}
+		}
 	}
 	
 	@Override

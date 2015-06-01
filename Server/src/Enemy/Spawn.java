@@ -5,12 +5,12 @@ import java.util.Random;
 public class Spawn {
 
 	private final int SPAWN_TIME_MIN = 1 * 1000;
-	private final int SPAWN_TIME_MAX = 10 * 1000;
+	private final int SPAWN_TIME_MAX = 5 * 1000;
 	
 	private final int SPAWN_NUMBER_MIN = 1;
 	private final int SPAWN_NUMBER_MAX = 2;
 	
-	private int MAX_SPAWNED_MONSTER = 20;
+	private int MAX_SPAWNED_MONSTER = 30;
 	private int nextMonsterSizeSpawn = 0;
 	private long nextSpawnTime = 0;
 	private int SpawnedMonster = 0;
