@@ -13,6 +13,7 @@ public class GameObject extends Actor{
 	protected float old_x;
 	protected float old_y;
 	protected int ID;
+	protected int Speed = 180;
 	public MoveDirection Direction;
 	
 	public GameObject(Texture texture, float position_x, float position_y) {
@@ -83,34 +84,42 @@ public class GameObject extends Actor{
 		this.ID = ID;
 	}
 	
+	public int getSpeed(){
+		return this.Speed;
+	}
+	
+	public void setSpeed(int Speed){
+		this.Speed = Speed;
+	}
+	
 	@Override
 	public void act(float delta) {
 		super.act(delta);
 		if(Direction != null){
 			switch (Direction){
 			case UP:
-				moveBy(0,180 * delta );
+				moveBy(0,Speed * delta );
 				break;
 			case DOWN:
-				moveBy(0, -180 * delta );
+				moveBy(0, -Speed * delta );
 				break;
 			case LEFT:
-				moveBy(-180 * delta, 0);
+				moveBy(-Speed * delta, 0);
 				break;
 			case RIGHT:
-				moveBy(180 * delta, 0);
+				moveBy(Speed * delta, 0);
 				break;
 			case LEFT_DOWN:
-				moveBy(-180 * delta, -180 * delta);
+				moveBy(-Speed * delta, -Speed * delta);
 				break;
 			case LEFT_UP:
-				moveBy(-180 * delta, 180 * delta);
+				moveBy(-Speed * delta, Speed * delta);
 				break;
 			case RIGHT_DOWN:
-				moveBy(180 * delta, -180 * delta);
+				moveBy(Speed * delta, -Speed * delta);
 				break;
 			case RIGHT_UP:
-				moveBy(180 * delta, 180 * delta);
+				moveBy(Speed * delta, Speed * delta);
 				break;
 			case STOP:
 				this.Direction = null;

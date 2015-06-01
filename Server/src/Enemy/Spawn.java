@@ -37,6 +37,7 @@ public class Spawn {
 			int y = rand.nextInt((500 - 1) + 1) + 1;
 			
 			AI Enemy = new AI(HEAD_ID, x, y);
+			Enemy.setSpeed(40);
 			
 			HEAD_ID ++;
 			SpawnedMonster ++;

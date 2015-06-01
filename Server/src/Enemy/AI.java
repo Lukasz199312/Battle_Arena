@@ -3,6 +3,7 @@ package Enemy;
 import java.util.Random;
 
 import packets.MoveDirection;
+import sun.font.LayoutPathImpl.EndType;
 
 public class AI {
 	
@@ -12,7 +13,11 @@ public class AI {
 	private Mode mode = Mode.Sleep;
 	private int ID;
 	private Random rand = new Random();
-	public MoveDirection Direction;
+	public MoveDirection Direction = MoveDirection.RIGHT;
+	public MoveDirection LastMove = MoveDirection.STOP;
+	private int Speed = 40;
+	
+	public long NextMove;
 	
 	public AI(int id, float x, float y) {
 		this.ID = id;
@@ -20,16 +25,40 @@ public class AI {
 		this.Position_y = y;
 	}
 	
-	public MoveDirection Move(float deltaTime){
-		if(mode != Mode.Sleep){
-			float move = Position_x + deltaTime * 180;
-			
-			Position_x = move;
-			
-			return null;
-		}
+	public void Move(float deltaTime){
+		LastMove = Direction;
 		
-		return null;
+		switch(Direction){
+		case RIGHT:
+			Position_x = Position_x + deltaTime * Speed;
+			break;
+		case RIGHT_UP:
+			Position_x = Position_x + deltaTime * Speed;
+			Position_y = Position_y + deltaTime * Speed;
+			break;
+			
+			default:
+			break;
+		}
+
+		
+		if(NextMove <= System.currentTimeMillis()){
+		//	int i = rand.nextInt((2 - 1) + 1) + 1;
+			int i = 0;
+			if(Direction == MoveDirection.RIGHT) Direction = MoveDirection.RIGHT_UP;
+			else if(Direction == MoveDirection.RIGHT_UP) Direction = MoveDirection.RIGHT;
+			
+			if(LastMove != Direction) System.out.println("Zmiana kierunku: " + getID());
+			
+			
+			
+			NextMove = System.currentTimeMillis() + 500;
+			
+			System.out.println( LastMove + "  " + getID());
+			System.out.println( Direction + "  " + getID());
+		}
+
+		
 
 	}
 
@@ -60,5 +89,13 @@ public class AI {
 	
 	public int getID() {
 		return ID;
+	}
+	
+	public int getSpeed(){
+		return this.Speed;
+	}
+	
+	public void setSpeed(int Speed){
+		this.Speed = Speed;
 	}
 }

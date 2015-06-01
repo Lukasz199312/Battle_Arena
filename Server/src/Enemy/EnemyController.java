@@ -47,12 +47,12 @@ public class EnemyController extends Thread {
 			}
 			
 			
-			Iterator<AI> EnemyMoveIter = AI_LIST.iterator();
-			while(EnemyMoveIter.hasNext()){
-				AI EnemyMove = EnemyMoveIter.next();
-				EnemyMove.Move(deltaTime);
-				
-			}
+//			Iterator<AI> EnemyMoveIter = AI_LIST.iterator();
+//			while(EnemyMoveIter.hasNext()){
+//				AI EnemyMove = EnemyMoveIter.next();
+//				EnemyMove.Move(deltaTime);
+//				
+//			}
 			
 			synchronized (list){
 				Iterator<AI> Iter_AI = AI_LIST.iterator();
@@ -60,13 +60,13 @@ public class EnemyController extends Thread {
 				
 				while(Iter_AI.hasNext()){
 					AI Enemy = Iter_AI.next();
+					Enemy.Move(deltaTime);
 					
-					if(Enemy.Direction != MoveDirection.RIGHT){
+					if(Enemy.Direction != Enemy.LastMove){
 						while(Iter_Player.hasNext()){
 							Player_Socket player = Iter_Player.next();
 							player.getPacketQueue().add(GeneratePacket(Enemy));
 						}
-						Enemy.Direction = MoveDirection.RIGHT;
 					}
 				}
 			}
@@ -118,9 +118,10 @@ public class EnemyController extends Thread {
 		packet.ID = Enemy.getID();
 		packet.x = Enemy.getX();
 		packet.y = Enemy.getY();
-		packet.Direction = MoveDirection.RIGHT;
+		packet.Direction =Enemy.Direction;
 		return packet;
 		
 	}
+	
 
 }

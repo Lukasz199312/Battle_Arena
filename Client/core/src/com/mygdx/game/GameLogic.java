@@ -114,8 +114,8 @@ public class GameLogic {
 				while(iter.hasNext()){
 					Enemy enemy = iter.next();
 					if(packet.ID == enemy.getID()){
-						enemy.setX(packet.x);
-						enemy.setY(packet.y);
+//						enemy.setX(packet.x);
+//						enemy.setY(packet.y);
 						enemy.Direction = packet.Direction;
 						packet = null;
 						break;
@@ -124,6 +124,7 @@ public class GameLogic {
 				if(packet != null){
 					addObject(GameObjectType.Enemy, packet.ID , packet.x, packet.y);
 					EnemyList.get(EnemyList.size() - 1).Direction = packet.Direction;
+					EnemyList.get(EnemyList.size() - 1).setSpeed(10);
 				}
 			}
 		}

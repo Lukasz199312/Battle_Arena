@@ -119,7 +119,7 @@ public class Client extends Thread{
 	
 	public void InitConnection(){
 		try {
-			socket = new Socket("192.168.0.102", 6002);
+			socket = new Socket("127.0.0.1", 6002);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -92,6 +92,10 @@ public class GameScreen implements Screen{
 	
 	@Override
 	public void render(float delta) {
+		stage.getCamera().position.x = gameLogic.getPlayer().getX() + gameLogic.getPlayer().getWidth() / 2;
+		stage.getCamera().position.y = gameLogic.getPlayer().getY() + gameLogic.getPlayer().getHeight() / 2;
+		stage.getCamera().update();
+		
 		gameLogic.NetworkUpdate();
 		Gdx.gl.glClearColor(255, 255, 255, 0);
 	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -138,7 +142,7 @@ public class GameScreen implements Screen{
 
 	@Override
 	public void resize(int width, int height) {
-		stage.getViewport().update(width, height);
+		//stage.getViewport().update(width, height);
 		
 	}
 

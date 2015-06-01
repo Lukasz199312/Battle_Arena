@@ -36,14 +36,8 @@ public class Player_Socket extends Thread{
 	private ArrayList<Player_Socket> Player_List = new ArrayList<>();
 	private ConcurrentLinkedQueue<Packet> queue = new ConcurrentLinkedQueue<Packet>();
 	private boolean Exit = false;
-	private long Last_ID = -100;
-	
-	private final float START_POSITION_X = 0;
-	private final float START_POSITION_Y = 0;
-	
-	private float Position_x = 0;
-	private float Position_y = 0;
-
+	private int PacketSend = 0;
+	private long time;
 	
 	public Player_Socket(Socket socket, int id, Thread MainThread) { 
 		this.socket = socket;
@@ -119,6 +113,7 @@ public class Player_Socket extends Thread{
 					packet = queue.poll();
 					if(packet == null) break;
 					SendPacket(packet);
+					PacketSend++;
 //					System.out.println(i);
 //					i++;
 				}
@@ -162,6 +157,14 @@ public class Player_Socket extends Thread{
 			}
 			
 			if(isEmpty == true) Sleep(5);
+			
+			if(time < System.currentTimeMillis()){
+				System.out.println(PacketSend);
+				PacketSend = 0;
+				time = System.currentTimeMillis() + 1000;
+			}
+			
+
 		}
 		
 	}
@@ -220,7 +223,6 @@ public class Player_Socket extends Thread{
 				
 				//if( ((Packet)object).ID == Last_ID ) return null;
 				
-				Last_ID = ((Packet)object).ID;
 				return (Packet)object;
 			} 
 			else {

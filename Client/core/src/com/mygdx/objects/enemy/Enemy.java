@@ -19,7 +19,6 @@ public class Enemy extends GameObject{
 	public void act(float delta) {
 		// TODO Auto-generated method stub
 		super.act(delta);
-		System.out.println(Direction);
 	}
 
 }
