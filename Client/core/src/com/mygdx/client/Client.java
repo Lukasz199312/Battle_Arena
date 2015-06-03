@@ -15,6 +15,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import packets.Action_Type;
+import packets.MoveDirection;
 import packets.Packet;
 
 import com.badlogic.gdx.Gdx;
@@ -49,12 +50,21 @@ public class Client extends Thread{
 		}
 		packet.ID = -10;
 		setSoTime(0);
+
 //		while(true){
-//			ReceivePacket = SendAndConfirm(packet);
-//			if(ReceivePacket != null) break;
+//			ReceivePacket = new Packet();
+//			ReceivePacket = GetPacket();
+//			if(ReceivePacket.Type == Action_Type.NEW_PLAYER) break;
+//				RegisterNewPlayer(ReceivePacket);
+//			
+//				System.out.println(	PacketQueue.size());
+//
+//			
 //		}
 		
 		ReceivePacket = GetPacket();
+		
+		
 		RegisterNewPlayer(ReceivePacket);
 		System.out.println("ID: " + ReceivePacket.ID);
 		
@@ -119,7 +129,7 @@ public class Client extends Thread{
 	
 	public void InitConnection(){
 		try {
-			socket = new Socket("127.0.0.1", 6002);
+			socket = new Socket("185.12.179.229", 6002);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

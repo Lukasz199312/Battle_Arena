@@ -26,7 +26,7 @@ public class EnemyController extends Thread {
 	@Override
 	public void run() {
 		try {
-			Thread.currentThread().sleep(5000);
+			Thread.currentThread().sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

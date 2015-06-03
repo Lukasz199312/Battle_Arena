@@ -70,6 +70,18 @@ public class GameScreen implements Screen{
 	    gameLogic.addObject(GameObjectType.StaticObject, -1, 294, 366);
 
 	    
+//	    while(true){
+//	    	try {
+//				Thread.currentThread().sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//	    	
+//	    	boolean a = gameLogic.BuildMap();
+//	    	if(a = true) break;
+//	    }
+	    
 	    while(true){	//Wait for Connecting
 	    	try {
 				Thread.currentThread().sleep(100);
@@ -84,7 +96,7 @@ public class GameScreen implements Screen{
 	    	}
 	    }
 	    
-	    System.out.println("ID: " + gameLogic.getPlayer().getID());
+	   // System.out.println("ID: " + gameLogic.getPlayer().getID());
 	    
 	    Gdx.input.setInputProcessor(stage);
 

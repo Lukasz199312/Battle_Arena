@@ -70,6 +70,8 @@ public class GameLogic {
 			Packet packet = networkController.getPacket();
 			if(packet == null) return;
 			
+			System.out.println(packet.Type);
+			
 			if(packet.Type == Action_Type.PLAYER_UPDATE){
 				Iterator<Player> iter = ConnectedPlayerList.iterator();
 				while(iter.hasNext()){
@@ -127,6 +129,7 @@ public class GameLogic {
 					EnemyList.get(EnemyList.size() - 1).setSpeed(10);
 				}
 			}
+
 		}
 	}
 	
@@ -145,8 +148,8 @@ public class GameLogic {
 			
 			networkController.getPacketQueueUpdate().offer(packet);
 			
-			if(getClient().getPacketQueue().size() >= 50) getClient().getPacketQueue().clear();
-			if(getClient().getPacketQueueUpdate().size() >= 50) getClient().getPacketQueueUpdate().clear();
+//			if(getClient().getPacketQueue().size() >= 50) getClient().getPacketQueue().clear();
+//			if(getClient().getPacketQueueUpdate().size() >= 50) getClient().getPacketQueueUpdate().clear();
 			
 			time = System.currentTimeMillis();
 	//	}
@@ -160,6 +163,22 @@ public class GameLogic {
 		if(packet.Type == Action_Type.NEW_PLAYER){
 			addObject(GameObjectType.Player, packet.ID , packet.x, packet.y);
 		}
+	}
+	
+	public boolean BuildMap(){
+		Packet packet = networkController.getPacket();
+		if(packet == null) return false;
+		else if(packet.Type == Action_Type.GRASS_0){
+			GameObject mapobject = new GameObject(new Texture(Gdx.files.internal("grass_0.png")), 110, 100);
+			stage.addActor(mapobject);
+			System.out.println("Dodalem obiekt");
+			return false;
+		}
+		else if (packet.Type == Action_Type.NEW_PLAYER){
+			addObject(GameObjectType.Player, packet.ID , packet.x, packet.y);
+			return true;
+		}
+		return false;
 	}
 	
 	public Client getClient(){

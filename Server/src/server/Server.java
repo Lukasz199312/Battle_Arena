@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import map.Map;
 import Enemy.EnemyController;
 import packets.Packet;
 import server.gameobject.CreateConnection;
@@ -27,7 +28,8 @@ public class Server extends Thread{
 		this.MainThread = thread;
 		this.enemyController = new EnemyController(MainThread);
 		this.enemyController.setPlayer_List(PlayerList);
-
+		
+		Map.GenerateMap(2, 2);
 		
 		new Thread(enemyController).start();
 	}

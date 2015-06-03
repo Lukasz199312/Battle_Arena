@@ -39,7 +39,7 @@ public class main {
 			}
 		});
 		
-		Server server = new Server("localhost", 6002, Thread.currentThread());
+		Server server = new Server("185.12.179.229", 6002, Thread.currentThread());
 		
 		new Thread(server).start();
 

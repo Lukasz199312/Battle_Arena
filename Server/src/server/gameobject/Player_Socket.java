@@ -19,6 +19,9 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
+import map.Map;
+import map.MapObjects;
+
 import com.sun.xml.internal.ws.encoding.HasEncoding;
 
 import packets.Action_Type;
@@ -66,13 +69,6 @@ public class Player_Socket extends Thread{
 //		AddNewPlayer();
 //		getPlayers();
 		
-		Packet packet = new Packet();
-		Packet ReceivePacket = new Packet();
-		int Packet_Size = 0;
-		packet.Type = Action_Type.NEW_PLAYER;
-		packet.ID = this.id;
-		
-		
 		try {
 			socket.setTcpNoDelay(true);
 		} catch (SocketException e1) {
@@ -80,23 +76,26 @@ public class Player_Socket extends Thread{
 			e1.printStackTrace();
 		}
 		
-//		while(true){
-//			ReceivePacket = SendAndConfirm(packet);
-//			if(ReceivePacket != null)break;
-//		}
-	
-		SendPacket(packet);
-//		System.out.println("quee: " + queue.size());
-//		for(int i = 10; i <= 15; i++){
-//			packet = new Packet();
-//			packet.Type = Action_Type.PLAYER_UPDATE;
-//			packet.x = 10 + (i*50);
-//			packet.y = 100;
-//			packet.ID = 100 + i;
-//			
-//			queue.add(packet);
-//		}
+		Packet packet = new Packet();
+		Packet ReceivePacket = new Packet();
+		int Packet_Size = 0;
 		
+		for(MapObjects [] object_array : Map.getMapAre() ){
+			for(MapObjects mapObjects : object_array ){
+				packet = new Packet();
+				packet.MapObjects = mapObjects;
+				packet.Type = Action_Type.GRASS_0;
+				SendPacket(packet);
+			}
+			
+		}
+		
+		packet = new Packet();
+		packet.Type = Action_Type.NEW_PLAYER;
+		packet.ID = this.id;
+		
+		SendPacket(packet);
+
 		
 		System.out.println("quee: " + queue.size());
 		setSoTime(0);
