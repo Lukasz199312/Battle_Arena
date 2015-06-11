@@ -29,7 +29,7 @@ public class Server extends Thread{
 		this.enemyController = new EnemyController(MainThread);
 		this.enemyController.setPlayer_List(PlayerList);
 		
-		Map.GenerateMap(2, 2);
+		Map.GenerateMap(32, 32);
 		
 		new Thread(enemyController).start();
 	}

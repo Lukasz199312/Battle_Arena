@@ -21,6 +21,10 @@ public class Player_Controller {
 		isMoved = false;
 		this.Direction = MoveDirection.STOP;
 		
+		
+		if(Gdx.input.isKeyPressed(Keys.A) && Gdx.input.isKeyPressed(Keys.D)) return Direction;
+		if(Gdx.input.isKeyPressed(Keys.W) && Gdx.input.isKeyPressed(Keys.S)) return Direction;
+		
 		Move_UP(gameObject.getY(), delta);
 		Move_Down(gameObject.getY(), delta);
 		
@@ -65,7 +69,6 @@ public class Player_Controller {
 			gameObject.setX( position_x - (delta * Speed) );
 			gameObject.UpDateBounds();
 			isMoved = true;
-			
 			if(this.Direction != MoveDirection.STOP){
 				if(this.Direction == MoveDirection.UP) this.Direction = MoveDirection.LEFT_UP;
 				else if(this.Direction == MoveDirection.DOWN) this.Direction = MoveDirection.LEFT_DOWN;

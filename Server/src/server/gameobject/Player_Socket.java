@@ -79,19 +79,25 @@ public class Player_Socket extends Thread{
 		Packet packet = new Packet();
 		Packet ReceivePacket = new Packet();
 		int Packet_Size = 0;
+			
 		
-		for(MapObjects [] object_array : Map.getMapAre() ){
-			for(MapObjects mapObjects : object_array ){
+
+		
+		for(int i = 0 ; i < Map.getProperties().getX() ; i++){
+			for(int j = 0; j < Map.getProperties().getY(); j ++){
 				packet = new Packet();
-				packet.MapObjects = mapObjects;
+				packet.MapObjects = Map.getBackground()[i][j];
 				packet.Type = Action_Type.GRASS_0;
+				packet.x = i;
+				packet.y = j;
 				SendPacket(packet);
 			}
-			
 		}
 		
 		packet = new Packet();
 		packet.Type = Action_Type.NEW_PLAYER;
+		packet.x = 200;
+		packet.y = 200;
 		packet.ID = this.id;
 		
 		SendPacket(packet);
@@ -124,9 +130,7 @@ public class Player_Socket extends Thread{
 			}
 			
 			
-			
-			
-			//read from client
+
 			
 			packet = new Packet();
 			packet.Type = Action_Type.CLIENT_SEND_MODE;
@@ -155,7 +159,7 @@ public class Player_Socket extends Thread{
 				
 			}
 			
-			if(isEmpty == true) Sleep(5);
+			//if(isEmpty == true) Sleep(1);
 			
 			if(time < System.currentTimeMillis()){
 				System.out.println(PacketSend);
@@ -170,19 +174,7 @@ public class Player_Socket extends Thread{
 	
 	
 	
-	private Packet SendAndConfirm(Packet packet){
-		setSoTime(5);
-		Packet ReceivePacket = new Packet();
-		
-		while(true){
-			SendPacket(packet);
-			ReceivePacket = GetPacket();
-			if(ReceivePacket != null) break;
-		}
-		
-		return ReceivePacket;
-	}
-	
+
 	private boolean SendPacket(Packet packet){
 		try {
 			sendData.writeObject(packet);
@@ -255,27 +247,7 @@ public class Player_Socket extends Thread{
 		}
 		return false;
 	}
-	
-//	private void AddNewPlayer(){
-//		
-//		List<Player_Socket> list = Collections.synchronizedList(Player_List);
-//		
-//		synchronized (list) {
-//			Iterator<Player_Socket> iter = list.iterator();
-//			while(iter.hasNext()){
-//				Player_Socket player_Socket = iter.next();
-//				if(player_Socket.id == this.id) continue;
-//				
-//				Packet packet = new Packet();
-//				packet.Type = Action_Type.PLAYER_UPDATE;
-//				packet.x = START_POSITION_X;
-//				packet.y = START_POSITION_Y;
-//				packet.ID = this.id;
-//				player_Socket.queue.add(packet);
-//			}
-//		}
-//	}
-	
+
 	private boolean setSoTime(int time){
 		try {
 			socket.setSoTimeout(time);
@@ -286,27 +258,7 @@ public class Player_Socket extends Thread{
 		}
 	}
 	
-	
-//	private void getPlayers(){
-//		
-//		List<Player_Socket> list = Collections.synchronizedList(Player_List);
-//		
-//		synchronized (list) {
-//			Iterator<Player_Socket> iter = list.iterator();
-//			while(iter.hasNext()){
-//				Player_Socket player_Socket = iter.next();
-//				if(player_Socket.id == this.id) continue;
-//				
-//				Packet PlayerPacket = new Packet();
-//				PlayerPacket.Type = Action_Type.PLAYER_UPDATE;
-//				PlayerPacket.x = player_Socket.Position_x;
-//				PlayerPacket.y = player_Socket.Position_y;
-//				PlayerPacket.ID = player_Socket.id;
-//				this.queue.add(PlayerPacket);
-//			}
-//		}
-//	}
-	
+
 	public int getID() { return this.id; }
 	public void setPlayerList(ArrayList<Player_Socket> PlayerList) { this.Player_List = PlayerList; }
 	public ConcurrentLinkedQueue<Packet> getPacketQueue(){ return this.queue; }

@@ -22,16 +22,21 @@ import com.sun.javafx.scene.traversal.Direction;
 
 public class GameLogic {
 	private Stage stage;
+	private Stage MapStage;
 	private Player Player_Me = null;
 	private ArrayList<Player> ConnectedPlayerList = new ArrayList<Player>();
 	private ArrayList<Enemy> EnemyList = new ArrayList<Enemy>();
 	private ArrayList<GameObject> StaticGameObjectList = new ArrayList<GameObject>();
 	private NetworkController networkController = new NetworkController();
+	private ArrayList<GameObject> Map = new ArrayList<GameObject>();
+	private ArrayList<GameObject> MapForeground = new ArrayList<GameObject>();
+	private ArrayList<GameObject> MapForeground2 = new ArrayList<GameObject>();
 	private long time = 0;
 	private long FPS = 0;
 	
-	public GameLogic(Stage stage) {
+	public GameLogic(Stage stage, Stage mapStage) {
 		this.stage = stage;
+		this.MapStage = mapStage;
 	}
 	
 
@@ -41,12 +46,21 @@ public class GameLogic {
 	
 	public void addObject(GameObjectType Type, int ID, float position_x, float position_y){
 		if(Type == GameObjectType.Player){
-			this.Player_Me = new Player(new Texture(Gdx.files.internal("Player_Texture.png")), ID ,0, 0, 64, 64);
+			this.Player_Me = new Player(new Texture(Gdx.files.internal("Player_Texture.png")), ID ,position_x, position_y, 64, 64);
 			this.stage.addActor(Player_Me);
 		}
 		else if(Type == GameObjectType.StaticObject){
-			this.StaticGameObjectList.add(new GameObject(new Texture(Gdx.files.internal("Enemy.png")), position_x, position_y, 32, 32));
+			this.StaticGameObjectList.add(new GameObject(new Texture(Gdx.files.internal("box.png")), position_x, position_y, 64, 64));
 			this.stage.addActor(StaticGameObjectList.get(StaticGameObjectList.size()-1));
+		}
+		else if(Type == GameObjectType.Tower){
+			this.StaticGameObjectList.add(new GameObject(new Texture(Gdx.files.internal("tower.png")), position_x, position_y, 64, 128));
+			this.MapForeground.add(StaticGameObjectList.get(StaticGameObjectList.size()-1));
+		}
+		else if(Type == GameObjectType.GRASS_F){
+			GameObject object = new GameObject(new Texture(Gdx.files.internal("grass_f.png")), position_x, position_y);
+			MapForeground2.add(object);
+			
 		}
 		else if(Type == GameObjectType.ConnectedPlayer){
 			this.ConnectedPlayerList.add( new Player(new Texture(Gdx.files.internal("Player_Texture.png")), ID ,position_x, position_y, 64, 64) );
@@ -70,7 +84,6 @@ public class GameLogic {
 			Packet packet = networkController.getPacket();
 			if(packet == null) return;
 			
-			System.out.println(packet.Type);
 			
 			if(packet.Type == Action_Type.PLAYER_UPDATE){
 				Iterator<Player> iter = ConnectedPlayerList.iterator();
@@ -165,25 +178,53 @@ public class GameLogic {
 		}
 	}
 	
-	public boolean BuildMap(){
+	public void BuildMap(){
 		Packet packet = networkController.getPacket();
-		if(packet == null) return false;
+		if(packet == null) return ;
 		else if(packet.Type == Action_Type.GRASS_0){
-			GameObject mapobject = new GameObject(new Texture(Gdx.files.internal("grass_0.png")), 110, 100);
-			stage.addActor(mapobject);
-			System.out.println("Dodalem obiekt");
-			return false;
+			GameObject mapobject ;
+			switch(packet.MapObjects){
+			case GRASS_0:
+				 mapobject = new GameObject(new Texture(Gdx.files.internal("grass_0.png")), packet.x * 64, packet.y * 64);
+				 Map.add(mapobject);
+				 //stage.addActor(mapobject);
+				System.out.println("Dodalem obiekt");
+				break;
+				
+			case GRASS_1:
+				 mapobject = new GameObject(new Texture(Gdx.files.internal("grass_1.png")), packet.x * 64, packet.y * 64);
+				 Map.add(mapobject);
+				System.out.println("Dodalem obiekt");
+				break;
+				
+			case GRASS_2:
+				 mapobject = new GameObject(new Texture(Gdx.files.internal("grass_2.png")), packet.x * 64, packet.y * 64);
+				 Map.add(mapobject);
+				System.out.println("Dodalem obiekt");
+				break;
+			}
+
 		}
 		else if (packet.Type == Action_Type.NEW_PLAYER){
+			System.out.println("Gracz dodany");
 			addObject(GameObjectType.Player, packet.ID , packet.x, packet.y);
-			return true;
 		}
-		return false;
 	}
 	
 	public Client getClient(){
 		return networkController.getClient();
 	}
 	
+	public ArrayList<GameObject> getMapObject(){
+		return Map;
+	}
+	
+	
+	public ArrayList<GameObject> getMapForeground(){
+		return MapForeground;
+	}
+	public ArrayList<GameObject> getMapForeground2(){
+		return MapForeground2;
+	}
 	
 }

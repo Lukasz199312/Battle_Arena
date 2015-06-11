@@ -35,6 +35,7 @@ public class Client extends Thread{
 	private long MAX_MS = 0;
 	private long time;
 	private long RESET_TIME;
+	private int c=0;
 	
 	@Override
 	public void run() {
@@ -51,21 +52,16 @@ public class Client extends Thread{
 		packet.ID = -10;
 		setSoTime(0);
 
-//		while(true){
-//			ReceivePacket = new Packet();
-//			ReceivePacket = GetPacket();
-//			if(ReceivePacket.Type == Action_Type.NEW_PLAYER) break;
-//				RegisterNewPlayer(ReceivePacket);
-//			
-//				System.out.println(	PacketQueue.size());
-//
-//			
-//		}
-		
-		ReceivePacket = GetPacket();
+		while(true){
+			ReceivePacket = new Packet();
+			ReceivePacket = GetPacket();
+			if(ReceivePacket.Type == Action_Type.NEW_PLAYER) break;
+				RegisterNewPlayer(ReceivePacket);	
+		}
 		
 		
 		RegisterNewPlayer(ReceivePacket);
+		
 		System.out.println("ID: " + ReceivePacket.ID);
 		
 		int ReceivenNumberPacket = 0;
@@ -74,7 +70,7 @@ public class Client extends Thread{
 			time = System.currentTimeMillis();
 			
 			
-			Sleep(10);
+			//Sleep(10);
 			ReceivePacket = new Packet();
 			ReceivePacket = GetPacket();
 			
@@ -110,6 +106,7 @@ public class Client extends Thread{
 				
 				packet = new Packet();
 				packet.Type = Action_Type.END;
+				c=c+1;
 				SendPacket(packet);
 				break;
 			}
@@ -120,6 +117,8 @@ public class Client extends Thread{
 			if(RESET_TIME + 1000 <= System.currentTimeMillis()){
 				RESET_TIME = System.currentTimeMillis();
 				MAX_MS = MS;
+				System.out.println(c);
+				c=0;
 			}
 		}
 		
@@ -129,7 +128,11 @@ public class Client extends Thread{
 	
 	public void InitConnection(){
 		try {
-			socket = new Socket("185.12.179.229", 6002);
+			while(true){
+				socket = new Socket("81.2.233.120", 6002);
+				if(socket.isConnected() == true) break;
+			}
+			//socket = new Socket("localhost", 6002);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -221,7 +224,7 @@ public class Client extends Thread{
 		try {
 			Object object = getData.readObject();
 			if(object instanceof Packet){
-				//System.out.println("otrzymany pakiet: "+ ((Packet)object).Type);
+				System.out.println("otrzymany pakiet: "+ ((Packet)object).Type);
 				return (Packet)object;
 			} 
 			else {

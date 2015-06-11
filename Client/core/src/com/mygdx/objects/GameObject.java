@@ -92,6 +92,10 @@ public class GameObject extends Actor{
 		this.Speed = Speed;
 	}
 	
+	public Texture getTexture(){
+		return texture;
+	}
+	
 	@Override
 	public void act(float delta) {
 		super.act(delta);

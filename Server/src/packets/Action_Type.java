@@ -14,5 +14,6 @@ public enum Action_Type {
 	PLAYER_UPDATE,
 	REMOVE_PLAYER,
 	OPERATION_COMPLETE,
+	SHOOT,
 	GRASS_0;
 }
