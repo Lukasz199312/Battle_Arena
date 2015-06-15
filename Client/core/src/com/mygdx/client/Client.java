@@ -47,7 +47,7 @@ public class Client extends Thread{
 			socket.setTcpNoDelay(true);
 		} catch (SocketException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e1.printStackTrace(); 
 		}
 		packet.ID = -10;
 		setSoTime(0);
@@ -58,7 +58,7 @@ public class Client extends Thread{
 			if(ReceivePacket.Type == Action_Type.NEW_PLAYER) break;
 				RegisterNewPlayer(ReceivePacket);	
 		}
-		
+		///
 		
 		RegisterNewPlayer(ReceivePacket);
 		
@@ -224,7 +224,7 @@ public class Client extends Thread{
 		try {
 			Object object = getData.readObject();
 			if(object instanceof Packet){
-				System.out.println("otrzymany pakiet: "+ ((Packet)object).Type);
+				//System.out.println("otrzymany pakiet: "+ ((Packet)object).Type);
 				return (Packet)object;
 			} 
 			else {

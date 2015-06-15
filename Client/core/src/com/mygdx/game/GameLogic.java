@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.client.Client;
 import com.mygdx.client.NetworkController;
 import com.mygdx.objects.GameObject;
+import com.mygdx.objects.shoot;
 import com.mygdx.objects.enemy.Enemy;
 import com.mygdx.objects.player.Player;
 import com.sun.javafx.scene.traversal.Direction;
@@ -141,6 +142,10 @@ public class GameLogic {
 					EnemyList.get(EnemyList.size() - 1).Direction = packet.Direction;
 					EnemyList.get(EnemyList.size() - 1).setSpeed(10);
 				}
+			}
+			else if (packet.Type == Action_Type.SHOOT){
+				 shoot shoot = new shoot(new Texture(Gdx.files.internal("shoot.png")), 200,200);
+				 System.out.println("SHOOOOT");
 			}
 
 		}
